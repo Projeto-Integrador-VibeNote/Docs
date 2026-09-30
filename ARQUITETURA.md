@@ -69,14 +69,14 @@ Ponto único de entrada e única fonte de verdade sobre a sequência do pipeline
 Consome a fila de job de separação. Não conhece o `transcriber` nem publica nada destinado a ele. Pipeline:
 
 ```
-→ correção de áudio corrompido (ffmpeg)
-→ remoção de reverberação (WPE)
+→ conversão para WAV (ffmpeg) — sempre; com a opção "sanitizar", em modo tolerante a áudio corrompido
+→ remoção de reverberação (WPE) — só se o usuário ligar a opção "dereverb"
 → ou local (Demucs) ou via Modal.com (BS-RoFormer/MDX-Net)
-→ classificação de qualidade por stem (SNR, clipping, spectral flatness)
-→ normalização/denoise condicional
 ```
 
-Publica o resultado (stems + metadados) na fila de eventos, consumida pelo Go.
+As opções `sanitizar` e `dereverb` são escolhidas pelo usuário no front, vão no job de separação e valem `false` quando ausentes. A classificação de qualidade (SNR, clipping, spectral flatness) e o tratamento condicional por stem acontecem no transcriber, sobre o stem que ele vai processar.
+
+Publica o resultado (stems) na fila de eventos, consumida pelo Go.
 
 ### 3. Transcriber (Python)
 
